@@ -21,7 +21,8 @@ public class SpaceInvaders extends JFrame {
 	}
 }
 
-class GamePanel extends JPanel {
+// ✅ now matches teacher style
+class GamePanel extends JPanel implements ActionListener {
 
 	boolean gameOver = false;
 
@@ -67,7 +68,7 @@ class GamePanel extends JPanel {
 			}
 		});
 
-		// create enemies
+		// enemies
 		enemies = new Enemy[rows][cols];
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
@@ -81,13 +82,14 @@ class GamePanel extends JPanel {
 			barriers[i] = new Barrier(150 + i * 200, 450);
 		}
 
-		timer = new Timer(10, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				move();
-				repaint();
-			}
-		});
+		timer = new Timer(20, this);
 		timer.start();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		move();
+		repaint();
 	}
 
 	public void move() {
@@ -101,7 +103,7 @@ class GamePanel extends JPanel {
 		if (x < 0) x = 0;
 		if (x > 800 - 200) x = 800 - 200;
 
-		// move enemies
+		// enemies move
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
 				enemies[r][c].move(enemyDir, enemySpeed);

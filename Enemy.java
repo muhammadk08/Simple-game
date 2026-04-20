@@ -6,37 +6,32 @@ public class Enemy {
 	int x, y;
 	boolean alive = true;
 
-	Image img;
+	Image[] imgs = new Image[2];
+	int frame = 0;
 
 	public Enemy(int x, int y) {
 		this.x = x;
 		this.y = y;
 
-		// try normal file load first
-		img = new ImageIcon("enemy.png").getImage();
-
-		// if that fails → try resource load
-		if (img == null || img.getWidth(null) == -1) {
-			java.net.URL url = getClass().getResource("enemy.png");
-			if (url != null) {
-				img = new ImageIcon(url).getImage();
-			}
-		}
+    imgs[0] = new ImageIcon("enemy0.png").getImage();
+    imgs[1] = new ImageIcon("enemy1.png").getImage();
 	}
 
 	public void move(int dir, int speed) {
 		x += dir * speed;
+
+		frame++;
+		if (frame >= 10) {
+			frame = 0;
+		}
 	}
 
 	public void draw(Graphics g) {
 		if (alive) {
-			if (img != null && img.getWidth(null) != -1) {
-				g.drawImage(img, x, y, 60, 40, null);
-			} else {
-				// fallback (so you SEE something if image fails)
-				g.setColor(Color.RED);
-				g.fillRect(x, y, 60, 40);
-			}
+
+			int index = frame <5? 0 : 1;
+
+			g.drawImage(imgs[index], x, y, 60, 40, null);
 		}
 	}
 
