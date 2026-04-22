@@ -175,9 +175,7 @@ class GamePanel extends JPanel implements ActionListener {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 800, 600);
 
-		// player
-		g.setColor(Color.GREEN);
-		g.fillRect(x, 550, 200, 50);
+
 
 		// enemies
 		for (int r = 0; r < rows; r++) {
@@ -203,5 +201,12 @@ class GamePanel extends JPanel implements ActionListener {
 			g.setColor(Color.WHITE);
 			g.fillRect(bulletX, bulletY, 5, 10);
 		}
+		// player
+		g.setColor(Color.GREEN);
+		g.fillRect(x+50, 600-25+5, 100, 25);
+		g.fillRect(x+50+15, 600-32+5, 70, 30);
+		g.fillRect(x+93, 600-45+5, 70/4, 30);
+		g.fillRect(x+93, 600-45, 70/4, 30);
+		g.fillRect(x+99, 600-50+5, 5, 10);
 	}
 }

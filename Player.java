@@ -22,5 +22,6 @@ public class Player {
 	public void draw(Graphics g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(x, 600 - height, width, height);
+		g.fillRect(x, 600 - height, width, height);
 	}
 }
