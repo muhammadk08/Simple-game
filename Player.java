@@ -14,7 +14,7 @@ public class Player {
 		if (left) x -= 5;
 		if (right) x += 5;
 
-		// keep in screen
+		// keep it inside
 		if (x < 0) x = 0;
 		if (x > 800 - width) x = 800 - width;
 	}

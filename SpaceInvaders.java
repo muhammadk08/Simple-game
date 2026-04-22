@@ -21,7 +21,6 @@ public class SpaceInvaders extends JFrame {
 	}
 }
 
-// ✅ now matches teacher style
 class GamePanel extends JPanel implements ActionListener {
 
 	boolean gameOver = false;
@@ -110,7 +109,7 @@ class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 
-		// edge check
+		// border check
 		boolean hitEdge = false;
 
 		for (int r = 0; r < rows; r++) {
