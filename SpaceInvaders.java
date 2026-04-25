@@ -41,8 +41,12 @@ class GamePanel extends JPanel implements ActionListener {
 
 	Enemy[][] enemies;
 	Barrier[] barriers;
+	EnemyBullet enemyBullet;
+	int lives = 3;
+	Image heart;
 
 	public GamePanel() {
+		heart = new ImageIcon("heart.png").getImage();
 
 		setPreferredSize(new Dimension(800, 600));
 
@@ -83,6 +87,7 @@ class GamePanel extends JPanel implements ActionListener {
 
 		timer = new Timer(20, this);
 		timer.start();
+		enemyBullet = new EnemyBullet();
 	}
 
 	@Override
@@ -166,13 +171,45 @@ class GamePanel extends JPanel implements ActionListener {
 				}
 			}
 		}
+	// enemy randomly shoots
+	if (!enemyBullet.active && Math.random() < 0.02) {
+
+		int r = (int)(Math.random() * rows);
+		int c = (int)(Math.random() * cols);
+
+		if (enemies[r][c].alive) {
+			enemyBullet.shoot(
+				enemies[r][c].x + 30,
+				enemies[r][c].y + 40
+			);
+		}
+	}
+	enemyBullet.move();
+	if (enemyBullet.hitPlayer(x)) {
+		lives--;
+
+		if (lives <= 0) {
+			gameOver = true;
+		}
+	}
+	// enemy bullet hits barriers
+	if (enemyBullet.active) {
+		for (int i = 0; i < barriers.length; i++) {
+			if (barriers[i].hit(enemyBullet.x, enemyBullet.y)) {
+				enemyBullet.active = false;
+			}
+		}
+	}
 	}
 
 	@Override
 	public void paint(Graphics g) {
-
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 800, 600);
+		// draw lives as hearts
+		for (int i = 0; i < lives; i++) {
+			g.drawImage(heart, 20 + i * 40, 20, 30, 30, null);
+		}
 
 
 
@@ -195,11 +232,13 @@ class GamePanel extends JPanel implements ActionListener {
 			g.drawString("GAME OVER", 250, 300);
 		}
 
+
 		// bullet
 		if (shooting) {
 			g.setColor(Color.WHITE);
 			g.fillRect(bulletX, bulletY, 5, 10);
 		}
+		enemyBullet.draw(g);
 		// player
 		g.setColor(Color.GREEN);
 		g.fillRect(x+50, 600-25+5, 100, 25);
