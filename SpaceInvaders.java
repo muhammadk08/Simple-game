@@ -121,7 +121,6 @@ class GamePanel extends JPanel implements ActionListener {
 				}
 			}
 		}
-
 		if (hitEdge) {
 			enemyDir *= -1;
 
@@ -206,7 +205,7 @@ class GamePanel extends JPanel implements ActionListener {
 		g.fillRect(x+50, 600-25+5, 100, 25);
 		g.fillRect(x+50+15, 600-32+5, 70, 30);
 		g.fillRect(x+93, 600-45+5, 70/4, 30);
-		g.fillRect(x+93, 600-45, 70/4, 30);
+		g.fillRect(x+93, 600-35, 70/4, 30);
 		g.fillRect(x+99, 600-50+5, 5, 10);
 	}
 }

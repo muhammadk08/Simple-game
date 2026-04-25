@@ -25,8 +25,7 @@ public class Bullet {
 
 	public void draw(Graphics g) {
 		if (active) {
-			g.setColor(Color.WHITE);
-			g.fillRect(x, y, 5, 10);
+
 		}
 	}
 }

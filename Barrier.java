@@ -4,7 +4,7 @@ import javax.swing.*;
 public class Barrier {
 
 	int x, y;
-	int state = 0; // 0,1,2 then gone
+	int state = 0;
 
 	Image[] imgs = new Image[3];
 
