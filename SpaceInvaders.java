@@ -46,7 +46,11 @@ class GamePanel extends JPanel implements ActionListener {
 	Image heart;
 	Boss boss;
 	BossBullet bossBullet;
-	boolean bossActive = true;
+	boolean bossActive = false;
+	int state = 0;
+	// 0 = menu
+	// 1 = playing
+	// 2 = game over
 	public GamePanel() {
 		heart = new ImageIcon("heart.png").getImage();
 
@@ -58,7 +62,22 @@ class GamePanel extends JPanel implements ActionListener {
 
 		addKeyListener(new KeyAdapter() {
 
-			public void keyPressed(KeyEvent e) {
+		public void keyPressed(KeyEvent e) {
+
+			// START GAME
+			if (state == 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				state = 1;
+				resetGame();
+			}
+
+			// RESTART AFTER GAME OVER
+			if (state == 2 && e.getKeyCode() == KeyEvent.VK_R) {
+				state = 1;
+				resetGame();
+			}
+
+			// normal controls only if playing
+			if (state == 1) {
 				keys[e.getKeyCode()] = true;
 
 				if (e.getKeyCode() == KeyEvent.VK_SPACE && !shooting) {
@@ -67,6 +86,7 @@ class GamePanel extends JPanel implements ActionListener {
 					bulletY = 600;
 				}
 			}
+		}
 
 			public void keyReleased(KeyEvent e) {
 				keys[e.getKeyCode()] = false;
@@ -81,11 +101,11 @@ class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 		//to test...
-		for (int r = 0; r < rows; r++) {
-			for (int c = 0; c < cols; c++) {
-				enemies[r][c].alive = false;
-			}
-		}
+		// for (int r = 0; r < rows; r++) {
+		// 	for (int c = 0; c < cols; c++) {
+		// 		enemies[r][c].alive = false;
+		// 	}
+		// }
 
 		// barriers
 		barriers = new Barrier[3];
@@ -99,7 +119,31 @@ class GamePanel extends JPanel implements ActionListener {
 		boss = new Boss();
 		bossBullet = new BossBullet();
 	}
+	public void resetGame() {
 
+		lives = 8;
+		x = 300;
+
+		// reset enemies
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
+				enemies[r][c].alive = true;
+				enemies[r][c].y = 50 + r * 80;
+			}
+		}
+
+		// reset boss
+		boss = new Boss();
+		bossBullet = new BossBullet();
+		bossActive = false;
+
+		// reset barriers
+		for (int i = 0; i < barriers.length; i++) {
+			barriers[i] = new Barrier(150 + i * 200, 450);
+		}
+
+		shooting = false;
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		move();
@@ -107,7 +151,7 @@ class GamePanel extends JPanel implements ActionListener {
 	}
 
 	public void move() {
-
+		if (state != 1) return;
 		if (gameOver) return;
 
 		// player
@@ -168,7 +212,7 @@ class GamePanel extends JPanel implements ActionListener {
 			for (int c = 0; c < cols; c++) {
 				if (enemies[r][c].alive &&
 				    enemies[r][c].y + 40 >= 600 - 50) {
-					gameOver = true;
+					state = 2;
 				}
 			}
 		}
@@ -199,7 +243,7 @@ class GamePanel extends JPanel implements ActionListener {
 		lives--;
 
 		if (lives <= 0) {
-			gameOver = true;
+			state = 2;
 		}
 	}
 	// enemy bullet hits barriers
@@ -210,9 +254,8 @@ class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 	}
-
 	if (!boss.isAlive()) {
-		gameOver = true; // ends game when boss dies
+		state = 2; // ends game when boss dies
 	}
 	// activate boss when enemies dead
 	boolean allDead = true;
@@ -247,7 +290,7 @@ class GamePanel extends JPanel implements ActionListener {
 
 		if (bossBullet.hitPlayer(x)) {
 			lives--;
-			if (lives <= 0) gameOver = true;
+			if (lives <= 0) state = 2;
 		}
 
 		if (shooting && boss.hit(bulletX, bulletY)) {
@@ -281,12 +324,24 @@ class GamePanel extends JPanel implements ActionListener {
 		for (int i = 0; i < barriers.length; i++) {
 			barriers[i].draw(g);
 		}
-
-		// game over
-		if (gameOver) {
+		if (state == 0) {
 			g.setColor(Color.WHITE);
 			g.setFont(new Font("Arial", Font.BOLD, 40));
-			g.drawString("GAME OVER", 250, 300);
+			g.drawString("SPACE INVADERS", 180, 250);
+
+			g.setFont(new Font("Arial", Font.PLAIN, 20));
+			g.drawString("Press ENTER to Start", 260, 320);
+			return;
+		}
+		// game over
+		if (state == 2) {
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Arial", Font.BOLD, 40));
+			g.drawString("GAME OVER", 250, 280);
+
+			g.setFont(new Font("Arial", Font.PLAIN, 20));
+			g.drawString("Press R to Restart", 260, 330);
+			return;
 		}
 		if (bossActive && boss.isAlive()) {
 
