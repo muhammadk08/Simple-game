@@ -42,9 +42,11 @@ class GamePanel extends JPanel implements ActionListener {
 	Enemy[][] enemies;
 	Barrier[] barriers;
 	EnemyBullet enemyBullet;
-	int lives = 3;
+	int lives = 8;
 	Image heart;
-
+	Boss boss;
+	BossBullet bossBullet;
+	boolean bossActive = true;
 	public GamePanel() {
 		heart = new ImageIcon("heart.png").getImage();
 
@@ -78,6 +80,12 @@ class GamePanel extends JPanel implements ActionListener {
 				enemies[r][c] = new Enemy(100 + c * 120, 50 + r * 80);
 			}
 		}
+		//to test...
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
+				enemies[r][c].alive = false;
+			}
+		}
 
 		// barriers
 		barriers = new Barrier[3];
@@ -88,6 +96,8 @@ class GamePanel extends JPanel implements ActionListener {
 		timer = new Timer(20, this);
 		timer.start();
 		enemyBullet = new EnemyBullet();
+		boss = new Boss();
+		bossBullet = new BossBullet();
 	}
 
 	@Override
@@ -200,19 +210,66 @@ class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 	}
+
+	if (!boss.isAlive()) {
+		gameOver = true; // ends game when boss dies
+	}
+	// activate boss when enemies dead
+	boolean allDead = true;
+
+	for (int r = 0; r < rows; r++) {
+		for (int c = 0; c < cols; c++) {
+			if (enemies[r][c].alive) {
+				allDead = false;
+			}
+		}
+	}
+
+	if (allDead) bossActive = true;
+
+	// boss logic
+	if (bossActive && boss.isAlive()) {
+		boss.move();
+
+		if (!bossBullet.active && Math.random() < 0.03) {
+			bossBullet.shoot(boss.x + 100, boss.y + 100);
+		}
+
+		bossBullet.move();
+		// boss bullet hits barriers
+		if (bossBullet.active) {
+			for (int i = 0; i < barriers.length; i++) {
+				if (barriers[i].hit(bossBullet.x, bossBullet.y)) {
+					bossBullet.active = false;
+				}
+			}
+		}
+
+		if (bossBullet.hitPlayer(x)) {
+			lives--;
+			if (lives <= 0) gameOver = true;
+		}
+
+		if (shooting && boss.hit(bulletX, bulletY)) {
+			shooting = false;
+		}
+	}
 	}
 
 	@Override
 	public void paint(Graphics g) {
+
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 800, 600);
 		// draw lives as hearts
 		for (int i = 0; i < lives; i++) {
 			g.drawImage(heart, 20 + i * 40, 20, 30, 30, null);
 		}
-
-
-
+		// boss
+		if (bossActive && boss.isAlive()) {
+			boss.draw(g);
+			bossBullet.draw(g);
+		}
 		// enemies
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
@@ -231,7 +288,19 @@ class GamePanel extends JPanel implements ActionListener {
 			g.setFont(new Font("Arial", Font.BOLD, 40));
 			g.drawString("GAME OVER", 250, 300);
 		}
+		if (bossActive && boss.isAlive()) {
 
+			// bar background (full)
+			g.setColor(Color.DARK_GRAY);
+			g.fillRect(20, 100, 20, 300);
+
+			// health amount
+			int barHeight = (int)(300.0 * boss.health / boss.maxHealth);
+
+			// green health (shrinks DOWN)
+			g.setColor(Color.GREEN);
+			g.fillRect(20, 100 + (300 - barHeight), 20, barHeight);
+		}
 
 		// bullet
 		if (shooting) {
@@ -247,4 +316,5 @@ class GamePanel extends JPanel implements ActionListener {
 		g.fillRect(x+93, 600-35, 70/4, 30);
 		g.fillRect(x+99, 600-50+5, 5, 10);
 	}
+	
 }

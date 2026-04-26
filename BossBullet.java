@@ -1,21 +1,21 @@
 import java.awt.*;
 
-public class EnemyBullet {
+public class BossBullet {
 
 	int x, y;
 	boolean active = false;
 
-	public void shoot(int startX, int startY) {
+	public void shoot(int sx, int sy) {
 		if (!active) {
+			x = sx;
+			y = sy;
 			active = true;
-			x = startX;
-			y = startY;
 		}
 	}
 
 	public void move() {
 		if (active) {
-			y += 10;
+			y += 20;
 
 			if (y > 600) {
 				active = false;
@@ -25,15 +25,15 @@ public class EnemyBullet {
 
 	public void draw(Graphics g) {
 		if (active) {
-			g.setColor(Color.YELLOW);
-			g.fillRect(x, y, 5, 10);
+			g.setColor(Color.RED);
+			g.fillRect(x, y, 12, 20); // BIG bullet
 		}
 	}
 
 	public boolean hitPlayer(int px) {
 		if (active &&
-		    x > px &&
-		    x < px + 200 &&
+		    x > px + 50 &&
+		    x < px + 150 &&
 		    y > 580 &&
 		    y < 600) {
 
