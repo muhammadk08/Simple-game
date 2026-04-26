@@ -12,7 +12,6 @@ public class BossBullet {
 			active = true;
 		}
 	}
-
 	public void move() {
 		if (active) {
 			y += 20;

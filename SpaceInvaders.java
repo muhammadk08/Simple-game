@@ -5,60 +5,64 @@ import java.awt.event.*;
 public class SpaceInvaders extends JFrame {
 
 	public SpaceInvaders() {
-		super("My Game");
+		super("My Game"); // window title
 
-		GamePanel game = new GamePanel();
-		add(game);
+		GamePanel game = new GamePanel(); // create game panel
+		add(game); // put panel inside window
 
-		pack();
+		pack(); // fit window to panel size
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close app on X
+		setVisible(true); // show window
 	}
 
 	public static void main(String[] args) {
-		new SpaceInvaders();
+		new SpaceInvaders(); // start game
 	}
 }
 
 class GamePanel extends JPanel implements ActionListener {
 
-	boolean gameOver = false;
+boolean gameOver = false; // not really used anymore (state replaces it)
 
-	int enemyDir = 1;
-	int enemySpeed = 2;
+int enemyDir = 1; // 1 = right, -1 = left
+int enemySpeed = 2; // how fast enemies move
 
-	int x = 300;
-	boolean[] keys;
+int x = 300; // player X position
+boolean[] keys; // stores which keys are pressed
 
-	Timer timer;
+Timer timer;
 
-	int bulletX, bulletY;
-	boolean shooting = false;
+int bulletX, bulletY; // player bullet position
+boolean shooting = false; // is player currently shooting?
 
-	int rows = 3;
-	int cols = 5;
+int rows = 3;
+int cols = 5;
 
-	Enemy[][] enemies;
-	Barrier[] barriers;
-	EnemyBullet enemyBullet;
-	int lives = 8;
-	Image heart;
-	Boss boss;
-	BossBullet bossBullet;
-	boolean bossActive = false;
-	int state = 0;
-	// 0 = menu
-	// 1 = playing
-	// 2 = game over
+Enemy[][] enemies; // grid of enemies
+Barrier[] barriers; // shields
+
+EnemyBullet enemyBullet; // enemy bullet object
+int lives; // player lives
+Image heart; // heart image
+
+Boss boss; // boss object
+BossBullet bossBullet; // boss bullet
+boolean bossActive; // is boss fight active?
+
+int state = 0;
+// 0 = menu
+// 1 = playing
+// 2 = game over
+// 3 = win
 	public GamePanel() {
 		heart = new ImageIcon("heart.png").getImage();
 
 		setPreferredSize(new Dimension(800, 600));
 
 		keys = new boolean[KeyEvent.KEY_LAST + 1];
-		setFocusable(true);
-		requestFocus();
+		setFocusable(true);  // By default, the JFrame has focus. This means when 
+		requestFocus();      // we press keys they go to it.
 
 		addKeyListener(new KeyAdapter() {
 
@@ -70,11 +74,11 @@ class GamePanel extends JPanel implements ActionListener {
 				resetGame();
 			}
 
-			// RESTART AFTER GAME OVER
-			if (state == 2 && e.getKeyCode() == KeyEvent.VK_R) {
-				state = 1;
-				resetGame();
-			}
+			// restart
+		if ((state == 2 || state == 3) && e.getKeyCode() == KeyEvent.VK_R) {
+			state = 1;
+			resetGame();
+		}
 
 			// normal controls only if playing
 			if (state == 1) {
@@ -100,12 +104,6 @@ class GamePanel extends JPanel implements ActionListener {
 				enemies[r][c] = new Enemy(100 + c * 120, 50 + r * 80);
 			}
 		}
-		//to test...
-		// for (int r = 0; r < rows; r++) {
-		// 	for (int c = 0; c < cols; c++) {
-		// 		enemies[r][c].alive = false;
-		// 	}
-		// }
 
 		// barriers
 		barriers = new Barrier[3];
@@ -119,30 +117,50 @@ class GamePanel extends JPanel implements ActionListener {
 		boss = new Boss();
 		bossBullet = new BossBullet();
 	}
+
+
+
 	public void resetGame() {
 
-		lives = 8;
+		lives = 22;
 		x = 300;
 
-		// reset enemies
+		// reset enemies COMPLETELY
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
 				enemies[r][c].alive = true;
+				enemies[r][c].x = 100 + c * 120; 
 				enemies[r][c].y = 50 + r * 80;
 			}
 		}
+
+		enemyDir = 1; //
+
+		// reset enemy bullet
+		enemyBullet = new EnemyBullet();
 
 		// reset boss
 		boss = new Boss();
 		bossBullet = new BossBullet();
 		bossActive = false;
+		//------------------------
+		//to go to boss 
 
+		// for (int r = 0; r < rows; r++) {
+		// 	for (int c = 0; c < cols; c++) {
+		// 		enemies[r][c].alive = false;
+		// 	}
+		// }
+		//------------------------
 		// reset barriers
 		for (int i = 0; i < barriers.length; i++) {
 			barriers[i] = new Barrier(150 + i * 200, 450);
 		}
 
 		shooting = false;
+
+		// reset keys 
+		keys = new boolean[KeyEvent.KEY_LAST + 1];
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -255,22 +273,21 @@ class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	if (!boss.isAlive()) {
-		state = 2; // ends game when boss dies
+		state = 3; // ends game when boss dies
 	}
-	// activate boss when enemies dead
-	boolean allDead = true;
+		boolean allDead = true;
 
-	for (int r = 0; r < rows; r++) {
-		for (int c = 0; c < cols; c++) {
-			if (enemies[r][c].alive) {
-				allDead = false;
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
+				if (enemies[r][c].alive) {
+					allDead = false;
+				}
 			}
 		}
-	}
 
-	if (allDead) bossActive = true;
+		if (allDead) bossActive = true;
 
-	// boss logic
+	// boss 
 	if (bossActive && boss.isAlive()) {
 		boss.move();
 
@@ -304,6 +321,35 @@ class GamePanel extends JPanel implements ActionListener {
 
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, 800, 600);
+		//menu
+		if (state == 0) {
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Arial", Font.BOLD, 40));
+			g.drawString("SPACE INVADERS", 180, 250);
+
+			g.setFont(new Font("Arial", Font.PLAIN, 20));
+			g.drawString("Press ENTER to Start", 260, 320);
+			return;
+		}
+		// game over
+		if (state == 2) {
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Arial", Font.BOLD, 40));
+			g.drawString("GAME OVER", 250, 280);
+
+			g.setFont(new Font("Arial", Font.PLAIN, 20));
+			g.drawString("Press R to Restart", 260, 330);
+			return;
+		}
+		if (state == 3) {
+			g.setColor(Color.GREEN);
+			g.setFont(new Font("Arial", Font.BOLD, 40));
+			g.drawString("YOU WON", 270, 280);
+
+			g.setFont(new Font("Arial", Font.PLAIN, 20));
+			g.drawString("Press R to Restart", 260, 330);
+			return;
+		}
 		// draw lives as hearts
 		for (int i = 0; i < lives; i++) {
 			g.drawImage(heart, 20 + i * 40, 20, 30, 30, null);
@@ -324,25 +370,7 @@ class GamePanel extends JPanel implements ActionListener {
 		for (int i = 0; i < barriers.length; i++) {
 			barriers[i].draw(g);
 		}
-		if (state == 0) {
-			g.setColor(Color.WHITE);
-			g.setFont(new Font("Arial", Font.BOLD, 40));
-			g.drawString("SPACE INVADERS", 180, 250);
 
-			g.setFont(new Font("Arial", Font.PLAIN, 20));
-			g.drawString("Press ENTER to Start", 260, 320);
-			return;
-		}
-		// game over
-		if (state == 2) {
-			g.setColor(Color.WHITE);
-			g.setFont(new Font("Arial", Font.BOLD, 40));
-			g.drawString("GAME OVER", 250, 280);
-
-			g.setFont(new Font("Arial", Font.PLAIN, 20));
-			g.drawString("Press R to Restart", 260, 330);
-			return;
-		}
 		if (bossActive && boss.isAlive()) {
 
 			// bar background (full)

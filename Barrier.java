@@ -11,7 +11,7 @@ public class Barrier {
 	public Barrier(int x, int y) {
 		this.x = x;
 		this.y = y;
-
+		//images
 		imgs[0] = new ImageIcon("barrier0.png").getImage();
 		imgs[1] = new ImageIcon("barrier1.png").getImage();
 		imgs[2] = new ImageIcon("barrier2.png").getImage();
@@ -24,11 +24,11 @@ public class Barrier {
 	}
 
 	public boolean hit(int bx, int by) {
-
+		//ignore hits 
 		if (state >= 3) return false;
 
 		if (bx > x && bx < x + 80 && by > y && by < y + 40) {
-			state++;
+			state++;//damage increse
 			return true;
 		}
 		return false;

@@ -27,6 +27,7 @@ public class Boss {
 		// move
 		x += dx;
 		y += dy;
+        //position changes every frame
 
 		// bounce left/right
 		if (x <= 0 || x + width >= 800) {
@@ -38,15 +39,16 @@ public class Boss {
 			dy *= -1;
 		}
 
-		// random direction change (chaotic)
-		if (Math.random() < 0.02) {
+		// random direction change
+		if (Math.random() < 0.02) {//2 percent chance 
 			dx = (int)(Math.random() * 7) - 3;
 			dy = (int)(Math.random() * 5) - 2;
 		}
 
 		// animation
 		frame++;
-		if (frame >= 20) frame = 0;
+		if (frame >= 20) 
+            frame = 0;
 	}
 
 	public void draw(Graphics g) {
@@ -69,10 +71,10 @@ public class Boss {
 	}
 
 	public int getCenterX() {
-		return x + width / 2;
+		return x + width / 2;//middle
 	}
 
 	public int getBottomY() {
-		return y + height;
+		return y + height;//bottom
 	}
 }
