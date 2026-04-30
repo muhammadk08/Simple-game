@@ -47,7 +47,7 @@ public class EnemyBullet {
     // CHECK IF BULLET HIT PLAYER
     public boolean hitPlayer(int px) {
         if (active && x > px && x < px + 200 && y > 580 && y < 600) {
-
+            System.out.println("hit");
             active = false; // remove bullet after hit
             return true; // player got hit
         }

@@ -13,7 +13,6 @@ public class SpaceInvaders extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close app on X
 		setVisible(true); // show window
 	}
-
 	public static void main(String[] args) {
 		new SpaceInvaders(); // start game
 	}
